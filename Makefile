@@ -1,5 +1,5 @@
 TARGET = prog
-LIBS = -lncurses
+LIBS = -lm -lncurses
 CC = gcc
 CFLAGS = -g -Wall
 
