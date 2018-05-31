@@ -55,5 +55,7 @@ dkms.conf
 .gitconfig
 .ssh/
 
+.config/
+
 .bash*
 .profile
