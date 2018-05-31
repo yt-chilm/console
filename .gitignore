@@ -54,3 +54,6 @@ dkms.conf
 .save
 .gitconfig
 .ssh/
+
+.bash*
+.profile
