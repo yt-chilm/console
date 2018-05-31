@@ -1,4 +1,4 @@
-TARGET = prog
+TARGET = hello.out
 LIBS = -lncurses
 CC = gcc
 CFLAGS = -g -Wall
