@@ -1,5 +1,5 @@
 TARGET = hello.out
-LIBS = -lncurses
+LIBS = -lm -lncurses
 CC = gcc
 CFLAGS = -g -Wall
 
