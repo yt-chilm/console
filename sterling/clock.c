@@ -6,21 +6,31 @@ void clock_init(WIN *pwin) {
 
 void clock_update() {
 	time_t current_time;
+	struct tm *loc_time;
     	char* c_time_string;
+	char buf[256];
+	int x, y;
 	WINDOW* pwin = console_clock.pwin->pwindow;
 
-	init_pair(1, COLOR_RED, COLOR_BLACK);
+	init_pair(1, COLOR_GREEN, COLOR_BLACK);
 
     	current_time = time(NULL);
 
-    	c_time_string = ctime(&current_time);
+	loc_time = localtime(&current_time);
+
+    	c_time_string = asctime(loc_time);
+
+	strftime(buf, 256, "%H:%M:%S\n", loc_time);
 
 	wattron(pwin, COLOR_PAIR(1));
 
-	int err = mvwprintw(pwin, 1, 1, "%s", c_time_string);
+	mvwprintw(pwin, 1, 2, "%s", buf);
 
-	if(err==ERR)
-		mvprintw(1,1,"Error rendering time");
+	int len = strftime (buf, 256, "Today is %A, %b %d\n", loc_time);
+
+	getmaxyx(pwin, y, x);
+
+	mvwprintw(pwin, 1, x-len-1, "%s", buf);
 
 	wrefresh(pwin);
 

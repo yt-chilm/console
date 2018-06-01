@@ -1,13 +1,15 @@
 #ifndef _WINDOWS_H_
 #define _WINDOWS_H_
 
+#include <curses.h>
 #include <panel.h>
 #include <stdbool.h>
+#include <stddef.h>
 
 typedef struct _win WIN;
 
 typedef struct _win_borders {
-	char ls, rs, ts, bs, tl, tr, bl, br; 
+	wchar_t ls, rs, ts, bs, tl, tr, bl, br; 
 }WIN_BORDER;
 
 typedef struct _win_color {
