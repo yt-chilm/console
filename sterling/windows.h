@@ -25,11 +25,13 @@ typedef struct _win {
 	WIN_COLOR color_text;
 	WIN_COLOR color_bk;
 	bool bdirty;
+	char *ptitle;
+	char *pkey;
 	WINDOW *pwindow;
 	WIN *pnext;
 }WIN;
 
-void win_init_params(WIN *pwin, WIN *pprevwin);
+void win_init_params(WIN *pwin, WIN *pprevwin, char *pname, char *pkey);
 void win_draw_borders(WIN *pwin, bool bclear);
 
 #endif

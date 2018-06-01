@@ -3,6 +3,7 @@
 
 typedef struct _clock {
 	WIN *pwin;
+	time_t last_time;
 }CLOCK;
 
 CLOCK console_clock;
