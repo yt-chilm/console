@@ -1,3 +1,4 @@
+
 #ifndef _WINDOWS_H_
 #define _WINDOWS_H_
 
@@ -27,11 +28,12 @@ typedef struct _win {
 	bool bdirty;
 	char *ptitle;
 	char *pkey;
+	bool(*handle_input)(int c);
 	WINDOW *pwindow;
 	WIN *pnext;
 }WIN;
 
 void win_init_params(WIN *pwin, WIN *pprevwin, char *pname, char *pkey);
-void win_draw_borders(WIN *pwin, bool bclear);
+void win_draw_borders(WIN *pwin, bool bclear, bool bfocus);
 
 #endif

@@ -1,6 +1,7 @@
 #include "clock.h"
 
 void clock_init(WIN *pwin) {
+	pwin->handle_input = &clock_handle_input;
 	console_clock.pwin = pwin;
 }
 
@@ -19,15 +20,17 @@ void clock_update() {
 
 	diff_t = difftime(current_time, console_clock.last_time);
 
-	if(diff_t < 1.0) {
+	if(diff_t < 1.0)
 		return;
-	}
 
 	loc_time = localtime(&current_time);
 
     	c_time_string = asctime(loc_time);
 
-	strftime(buf, 256, "%H:%M:%S\n", loc_time);
+	if(console_clock.bshowunix) 
+		sprintf(buf, "%u", (unsigned)current_time); 
+	else
+		strftime(buf, 256, "%H:%M:%S\n", loc_time);
 
 	wattron(pwin, COLOR_PAIR(1));
 
@@ -44,4 +47,16 @@ void clock_update() {
 	wattroff(pwin, COLOR_PAIR(1));
 
 	console_clock.last_time = current_time;
+}
+
+bool clock_handle_input(int c) {
+	switch(c) {
+		case 't':
+		case 'T':
+			console_clock.bshowunix=!console_clock.bshowunix;
+		break;
+		default:
+		break;
+	}
+	return false;
 }
