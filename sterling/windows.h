@@ -29,6 +29,7 @@ typedef struct _win {
 	char *ptitle;
 	char *pkey;
 	bool(*handle_input)(int c);
+	void(*renderer)(double delta);
 	WINDOW *pwindow;
 	WIN *pnext;
 }WIN;

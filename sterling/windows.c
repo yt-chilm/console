@@ -11,15 +11,16 @@ void win_init_params(WIN *pwin, WIN *pprevwin, char *pname, char *pkey) {
     	pwin->border.br = '+';
     	pwin->border.bl = '+';
 
-    	pwin->color_text.red = rand()%1000;
-    	pwin->color_text.green = rand()%1000;
-    	pwin->color_text.blue = rand()%1000;
+    	pwin->color_text.red = 0;
+    	pwin->color_text.green = 0;
+    	pwin->color_text.blue = 800;
     	pwin->color_bk.red = 0;
     	pwin->color_bk.green = 0;
     	pwin->color_bk.blue = 0;
 	pwin->bdirty = 1;
 
 	pwin->handle_input = 0;
+	pwin->renderer = 0;
 
 	pwin->ptitle = pname;
 	pwin->pkey = pkey;
@@ -48,8 +49,8 @@ void win_draw_borders(WIN *pwin, bool bclear, bool bfocus) {
 	wattron(pwin->pwindow, COLOR_PAIR(9));
 
 	if(bclear == 0) {
-		wborder(pwin->pwindow, pwin->border.ls, pwin->border.rs, 
-					pwin->border.ts, pwin->border.bs, 
+		wborder(pwin->pwindow, pwin->border.ls, pwin->border.rs,
+					pwin->border.ts, pwin->border.bs,
 					'+', '+', '+', '+');
 	}
 	else {

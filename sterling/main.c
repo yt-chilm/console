@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <panel.h>
@@ -9,9 +8,12 @@
 
 #include "windows.h"
 #include "clock.h"
+#include "control.h"
 
 #define WINCOUNT 5
-#define SYSCOUNT 1
+#define SYSCOUNT 2
+
+const double MS_PER_UPDATE = 1000.0/30.0;
 
 //#define _SHOWFPS_
 
@@ -19,7 +21,7 @@ WIN *pwindows[WINCOUNT];
 WIN *pwin_focus;
 
 void main_handle_input();
-void main_update_windows(float interpol);
+void main_update_windows(double delta);
 void main_create_windows();
 void main_destroy_windows();
 
@@ -31,18 +33,9 @@ long GetTickCount()
 
 int main(int argc, char *argv[]) {
 
-	const int TICKS_PER_SECOND = 25;
-	const int SKIP_TICKS = 1000 / TICKS_PER_SECOND;
-	const int MAX_FRAMESKIP = 5;
-
-	long next_system_tick = GetTickCount();
-	long current_system_tick = GetTickCount();
-    	int loops;
-    	float interpolation;
-
     	bool system_is_running = true;
 
-	void (*update_ptr_arr[])() = {clock_update};
+	void (*update_ptr_arr[])() = {control_update, clock_update};
 
 	WINDOW* pmainwin = initscr();
 	cbreak();
@@ -63,29 +56,26 @@ int main(int argc, char *argv[]) {
 
 	pwin_focus = pwindows[0];
 
+	double previous = GetTickCount();
+	double lag = 0.0;
 	while(system_is_running) {
 
-        	loops = 0;
-        	while((current_system_tick = GetTickCount()) > next_system_tick && loops < MAX_FRAMESKIP) {
-            		for(int c=0; c<SYSCOUNT; c++) {
+		double current = GetTickCount();
+		double elapsed = current - previous;
+		previous = current;
+		lag += elapsed;
+
+		main_handle_input();
+
+		while(lag>=MS_PER_UPDATE) {
+			for(int c=0; c<SYSCOUNT; c++) {
 				(*update_ptr_arr[c])();
 			}
-			main_handle_input();
-            		next_system_tick += SKIP_TICKS;
-            		loops++;
-        	}
+			lag -= MS_PER_UPDATE;
+		}
 
-        	interpolation = (current_system_tick + SKIP_TICKS - next_system_tick) / (float)SKIP_TICKS;
-        	main_update_windows(interpolation);
-
-#ifdef _SHOWFPS_
-		char buf[80];
-		long uT=GetTickCount();
-		sprintf(buf, "rate: %ums PERS SEC: %u",current_system_tick-next_system_tick, (1000/current_system_tick) - (double)next_system_tick);
-		mvprintw(10,2, "%s", buf);
-		uT = GetTickCount();
-#endif
-		refresh();
+		main_update_windows(lag/MS_PER_UPDATE);
+		//refresh();
     	}
 
 	main_destroy_windows();
@@ -96,7 +86,9 @@ int main(int argc, char *argv[]) {
 
 void main_handle_input() {
 	int c;
-	c = getch();
+
+	if ((c = getch()) == ERR)
+		return;
 
 	bool bstopbubble = false;
 
@@ -107,6 +99,9 @@ void main_handle_input() {
 		return;
 
 	switch(c) {
+		case KEY_BACKSPACE:
+			pwin_focus=pwindows[2];
+		break;
 		case '1':
 			pwin_focus=pwindows[0];
 		break;
@@ -127,13 +122,15 @@ void main_handle_input() {
 	}
 }
 
-void main_update_windows(float interpol) {
+void main_update_windows(double delta) {
 	WIN *pwin = pwindows[0];
 	while(pwin) {
-	//	if(pwin->bdirty==1) {
-			win_draw_borders(pwin, 0, pwin==pwin_focus);
+		if(pwin->bdirty==1) {
+			if(pwin->renderer)
+				pwin->renderer(delta);
 			pwin->bdirty=0;
-	//	}
+		}
+		win_draw_borders(pwin, 0, pwin==pwin_focus);
 		pwin=pwin->pnext;
 	}
 }
@@ -155,8 +152,9 @@ void main_create_windows() {
 	y=0;
 
 	pwindows[2] = malloc(sizeof(WIN));
-	win_init_params(pwindows[2], pwindows[1], "£££", "3");
+	win_init_params(pwindows[2], pwindows[1], "Control", "3");
 	pwindows[2]->pwindow = newwin((LINES/3), (COLS/2)-1, y, x);
+	control_init(pwindows[2]);
 
 	y+=(LINES/3);
 
@@ -169,8 +167,6 @@ void main_create_windows() {
 	pwindows[4] = malloc(sizeof(WIN));
 	win_init_params(pwindows[4], pwindows[3], "&&&", "5");
 	pwindows[4]->pwindow = newwin((LINES/3), (COLS/2)-1, y, x);
-
-	
 }
 
 void main_destroy_windows() {
