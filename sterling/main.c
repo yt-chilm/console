@@ -65,12 +65,10 @@ int main(int argc, char *argv[]) {
 		previous = current;
 		lag += elapsed;
 
-		main_handle_input();
-
 		while(lag>=MS_PER_UPDATE) {
-			for(int c=0; c<SYSCOUNT; c++) {
+			for(int c=0; c<SYSCOUNT; c++)
 				(*update_ptr_arr[c])();
-			}
+			main_handle_input();
 			lag -= MS_PER_UPDATE;
 		}
 
