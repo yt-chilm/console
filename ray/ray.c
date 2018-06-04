@@ -210,7 +210,7 @@ int main(int argc, char *argv[]) {
 		}
 
 		double moveSpeed = frameTime * 5.0;
-		double rotSpeed = frameTime * 3.0;
+		double rotSpeed = 90.0; // frameTime * 3.0;
 
 		int c;
 		double oldDirX, oldPlaneX;
@@ -219,12 +219,20 @@ int main(int argc, char *argv[]) {
 		}
 		switch(c) {
 			case KEY_UP:
+				/*
 				if(worldMap[(int)(posX + dirX * moveSpeed)][(int)posY] == false) posX += dirX * moveSpeed;
       				if(worldMap[(int)posX][(int)(posY + dirY * moveSpeed)] == false) posY += dirY * moveSpeed;
+				*/
+				if(worldMap[(int)(posX + dirX)][(int)posY] == false) posX += dirX;
+				if(worldMap[(int)posX][(int)(posY + dirY)] == false) posY += dirY;
 			break;
 			case KEY_DOWN:
+				/*
 				if(worldMap[(int)(posX - dirX * moveSpeed)][(int)posY] == false) posX -= dirX * moveSpeed;
       				if(worldMap[(int)posX][(int)(posY - dirY * moveSpeed)] == false) posY -= dirY * moveSpeed;
+				*/
+				if(worldMap[(int)(posX - dirX)][(int)posY] == false) posX -= dirX;
+				if(worldMap[(int)posX][(int)(posY - dirY)] == false) posY -= dirY;
 			break;
 			case KEY_LEFT:
 				oldDirX = dirX;
