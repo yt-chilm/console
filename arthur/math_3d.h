@@ -184,7 +184,7 @@ static inline mat4_t m4_rotation_z   (float angle_in_rad);
 
               mat4_t m4_ortho        (float left, float right, float bottom, float top, float back, float front);
               mat4_t m4_perspective  (float vertical_field_of_view_in_deg, float aspect_ratio, float near_view_distance, float far_view_distance);
-              mat4_t m4_look_at      (vec3_t from, vec3_t to, vec3_t up);
+	      mat4_t m4_look_at      (vec3_t from, vec3_t to, vec3_t up);
 
 static inline mat4_t m4_transpose    (mat4_t matrix);
 static inline mat4_t m4_mul          (mat4_t a, mat4_t b);
