@@ -54,7 +54,7 @@ void engine_kill_mesh(MESH *pmesh) {
 
 CAMERA* engine_new_camera(void) {
 	CAMERA *pcamera = malloc(sizeof(CAMERA));
-	pcamera->position = vec3(0,0,10);
+	pcamera->position = vec3(0,0,20);
 	pcamera->target = vec3(0,0,0);
 	return pcamera;
 }
@@ -73,28 +73,32 @@ void engine_draw_point(vec3_t *point, BUFFER *pbuffer) {
 void engine_draw(CAMERA *pcamera, MESH *pmeshes, BUFFER *pbuffer) {
 	vec3_t up = vec3(0, 1, 0);
 	mat4_t transform = m4_look_at(pcamera->position, pcamera->target, up);
-	mat4_t projection = m4_perspective(60,  pbuffer->width/pbuffer->height, 1, 10);
-	mat4_t world_to_screen = m4_mul(transform, projection);
+	mat4_t projection = m4_perspective(45,  pbuffer->width/pbuffer->height, 0.1f, 100.0f);
+	mat4_t world_to_screen = m4_mul(projection, transform);
+
+	mat4_t world_matrix = m4_identity();
+	world_matrix = m4_mul(world_matrix, m4_rotation_x(pmeshes->rotation.x));
+	world_matrix = m4_mul(world_matrix, m4_rotation_y(pmeshes->rotation.y));
+	world_matrix = m4_mul(world_matrix, m4_rotation_z(pmeshes->rotation.z));
+	world_matrix = m4_mul(world_matrix, m4_translation(pmeshes->position));
+	mat4_t transMatrix = m4_mul(world_matrix, world_to_screen);
+	//mat4_t transMatrix = m4_mul(m4_mul(projection, transform), world_matrix);
 
 	for(int v=0; v<8; v++) {
 		vec3_t vert = pmeshes->pvertices[v];
 
-		mat4_t world_matrix = m4_identity();
-		world_matrix = m4_mul(world_matrix, m4_rotation_x(pmeshes->rotation.x));
-		world_matrix = m4_mul(world_matrix, m4_rotation_y(pmeshes->rotation.y));
-		world_matrix = m4_mul(world_matrix, m4_rotation_z(pmeshes->rotation.z));
-		world_matrix = m4_mul(world_matrix, m4_translation(pmeshes->position));
-		//mat4_t transMatrix = m4_mul(world_matrix, m4_mul(transform, projection));
-		mat4_t transMatrix = m4_mul(m4_mul(projection, transform), world_matrix);
-
 		vec3_t point = m4_mul_pos(transMatrix, vert);
 
-		point.x = point.x * pbuffer->width + pbuffer->width / 2.0f;
-		point.y = -point.y * pbuffer->height + pbuffer->height / 2.0f;
+		mvprintw(2+v, 1, "vertex[%d] - x:%f, y:%f, z:%f", v, point.x, point.y, point.z);
+
+		point.x = (point.x * pbuffer->width) + (pbuffer->width / 2.0f);
+		point.y = (-point.y * pbuffer->height) + (pbuffer->height / 2.0f);
 
 		engine_draw_point(&point, pbuffer);
-		mvprintw(2+v, 1, "vertex[%d] - x:%f, y:%f", v, point.x, point.y);
+		mvprintw(12+v, 1, "vertex[%d] - x:%f, y:%f", v, point.x, point.y);
 	}
+
+	mvprintw(22, 1, "buffer - w:%d, h:%d", pbuffer->width, pbuffer->height);
 }
 
 void engine_render(WINDOW* pwindow, BUFFER* pdata) {

@@ -32,7 +32,7 @@ void init_objects(void) {
 	pcube->pvertices[6] = vec3(1, -1, 1);
 	pcube->pvertices[7] = vec3(1, -1, -1);
 */
-	pcube->position = vec3(0, 0, 0);
+	pcube->position = vec3(0, 0, -30);
 	pcube->rotation = vec3(0, 0, 0);
 }
 
@@ -104,11 +104,11 @@ int main(int argc, char *argv[]) {
     		wrefresh(pwindow);
 
 		//pcube->rotation = vec3(pcube->rotation.x+(0.01f*(current-previous)), pcube->rotation.y+(0.01f*(current-previous)), pcube->rotation.z);
-		//pcube->rotation = vec3(pcube->rotation.x+(0.01f*(current-previous)), pcube->rotation.y, pcube->rotation.z);
+		pcube->rotation = vec3(pcube->rotation.x, pcube->rotation.y+(0.01f), pcube->rotation.z);
 
 		previous = current;
 
-    		usleep(1000000.0/30.0);
+    		usleep(1000000.0/10.0);
   	}
 
 	engine_kill_camera(pcamera);
